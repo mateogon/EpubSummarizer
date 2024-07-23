@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 from epub_extractor import extract
-from consolidate_epub import consolidate
+from epub_processor import process_epub  # Updated import statement
 
 def main(path):
     character_limit = 9999999999
@@ -9,18 +9,18 @@ def main(path):
     # Extract files from the specified .epub file or directory
     extract(path)
 
-    # Consolidate .xhtml files into text files
+    # Process .xhtml files into text files
     path = Path(path)
     books_folder = Path('books')
     if path.is_dir():
         for epub_file in path.glob('*.epub'):
             book_folder = books_folder / "".join([c for c in epub_file.stem if c.isalpha() or c.isdigit() or c==' ']).rstrip()
             if book_folder.exists():
-                consolidate(book_folder, character_limit)
+                process_epub(book_folder, character_limit)  # Updated function call
     elif path.is_file() and path.suffix == '.epub':
         book_folder = books_folder / "".join([c for c in path.stem if c.isalpha() or c.isdigit() or c==' ']).rstrip()
         if book_folder.exists():
-            consolidate(book_folder, character_limit)
+            process_epub(book_folder, character_limit)  # Updated function call
     else:
         print(f"Invalid path or no .epub files found in: {path}")
 

@@ -2,10 +2,10 @@ import os
 import re
 from pathlib import Path
 
-class EpubConsolidator:
+class EpubProcessor:
     def __init__(self, base_path, character_limit=350000):
         self.base_path = Path(base_path)
-        self.order_file = self.base_path / "files_order.txt"  # Updated file name
+        self.order_file = self.base_path / "files_order.txt"
         self.order = self.read_order_file()
         self.character_limit = character_limit
 
@@ -14,8 +14,8 @@ class EpubConsolidator:
             order = file.readlines()
         return [x.strip() for x in order]
 
-    def remove_html_tags_and_empty_lines(self, text):
-        text = re.sub(r"\s+", " ", text)  # This collapses all whitespace into single spaces for cleaner processing
+    def clean_html_content(self, text):
+        text = re.sub(r"\s+", " ", text)  # Collapses all whitespace into single spaces for cleaner processing
         
         text = re.sub(r"<div[^>]*>", "", text)
         text = re.sub(r"</div>", "\n", text)
@@ -39,8 +39,8 @@ class EpubConsolidator:
         
         return '\n'.join(non_empty_lines)
 
-    def consolidate_files(self):
-        consolidated_files = []
+    def process_files(self):
+        processed_files = []
         skipped_files = []
         copyright_keywords = [
             "copyright", "all rights reserved",
@@ -61,7 +61,7 @@ class EpubConsolidator:
                         skipped_files.append(full_file_path)
                         continue
 
-                    cleaned_content = self.remove_html_tags_and_empty_lines(file_content)
+                    cleaned_content = self.clean_html_content(file_content)
                     lines = cleaned_content.split('\n')
                     non_empty_lines = [line for line in lines if line.strip() != '']
 
@@ -78,9 +78,9 @@ class EpubConsolidator:
                     output_file = self.base_path / f"{Path(file_name).stem}.txt"
                     with open(output_file, 'w', encoding='utf-8') as txt_file:
                         txt_file.write(cleaned_content)
-                    consolidated_files.append(output_file.name)
+                    processed_files.append(output_file.name)
 
-                # Remove the original file after consolidation
+                # Remove the original file after processing
                 try:
                     full_file_path.unlink()
                 except PermissionError as e:
@@ -96,15 +96,15 @@ class EpubConsolidator:
             except PermissionError as e:
                 print(f"Error deleting skipped file {file_path}: {e}")
 
-        # Update files_order.txt with consolidated files only
+        # Update files_order.txt with processed files only
         with open(self.order_file, 'w', encoding='utf-8') as order_file:
-            for file in consolidated_files:
+            for file in processed_files:
                 order_file.write(file + "\n")
-        return consolidated_files
+        return processed_files
 
-def consolidate(book_path, character_limit):
+def process_epub(book_path, character_limit):
     book_path = Path(book_path)
     if book_path.is_dir():
-        print(f"----Consolidating files in {book_path}----")
-        consolidator = EpubConsolidator(book_path, character_limit)
-        consolidator.consolidate_files()
+        print(f"----Processing files in {book_path}----")
+        processor = EpubProcessor(book_path, character_limit)
+        processor.process_files()
