@@ -7,7 +7,7 @@ class PromptProcessor:
     def __init__(self, book_path, api_key):
         self.book_path = Path(book_path)
         self.order_file = self.book_path / "files_order.txt"
-        self.base_prompt_file = self.book_path / "base_prompt.txt"
+        self.base_prompt_file = "base_prompt.txt"
         self.responses_dir = self.book_path / "responses"
         self.responses_dir.mkdir(exist_ok=True)
         self.client = OpenAI(api_key=api_key)
