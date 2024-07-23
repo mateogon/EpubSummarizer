@@ -18,7 +18,7 @@ EpubSummarizer is a tool designed to extract content from EPUB files, consolidat
 1. Clone the repository:
 
    ```sh
-   git clone <repository-url>
+   git clone https://github.com/mateogon/EpubSummarizer.git
    cd EpubSummarizer
    ```
 
