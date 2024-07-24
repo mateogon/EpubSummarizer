@@ -50,7 +50,7 @@ class PromptProcessor:
             full_prompt = f"{self.base_prompt}\n\n{content}"
             print(f"Sending prompt for file {i}/{total_files}")
             response = self.send_prompt(full_prompt)
-            response_file = self.responses_dir / f"{Path(file_name).stem}_response.txt"
+            response_file = self.responses_dir / f"{Path(file_name).stem}_response.md"
             with open(response_file, 'w', encoding='utf-8') as file:
                 file.write(response)
             print(f"Response for file {i}/{total_files} saved to {response_file}")
